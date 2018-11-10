@@ -8,291 +8,214 @@
 
 import Foundation
 
-extension KeyedDecodingContainer {
-    //MARK: - String
-    func decodeIfPresent(_ type: String.Type, forKey key: K) throws -> String? {
-        var value:String?
-        do {
-            value = try self.decode(String.self, forKey: key)
-        }catch{
-            do {
-                let boolValue = try self.decode(Bool.self, forKey: key)
-                value = String(boolValue)
-            }catch{
-                do {
-                    let intValue = try self.decode(Int.self, forKey: key)
-                    let floatValue = try self.decode(Float.self, forKey: key)
-                    if (Float(intValue) == floatValue) {
-                        value = String(intValue)
-                    }else {
-                        value = String(floatValue)
-                    }
-                }catch{
-                }
-            }
-        }
-        return value
-    }
+extension String {
     
-    //MARK: - Int
-    func decodeIfPresent(_ type: Int.Type, forKey key: K) throws -> Int? {
-        var value:Int?
-        do {
-            value = try self.decode(Int.self, forKey: key)
-        }catch{
-            do {
-                let boolValue = try self.decode(Bool.self, forKey: key)
-                value = boolValue ? 1 : 0
-            }catch{
-                do {
-                    let stringValue = try self.decode(String.self, forKey: key)
-                    value = Int(stringValue)
-                }catch{
-                }
-            }
-        }
-        return value
-    }
+    // MARK: - Date Formtter
     
-    //MARK: - Bool
-    func decodeIfPresent(_ type: Bool.Type, forKey key: K) throws -> Bool? {
-        var value:Bool?
-        do {
-            value = try self.decode(Bool.self, forKey: key)
-        }catch{
-            do {
-                let intValue = try self.decode(Int.self, forKey: key)
-                value = Bool(truncating: intValue as NSNumber)
-            }catch{
-                do {
-                    let stringValue = try self.decode(String.self, forKey: key)
-                    value = Bool(stringValue)
-                }catch{
-                }
-            }
-        }
-        return value
-    }
-    
-    //MARK: - Float
-    func decodeIfPresent(_ type: Float.Type, forKey key: K) throws -> Float? {
-        var value:Float?
-        do {
-            value = try self.decode(Float.self, forKey: key)
-        }catch{
-            do {
-                let boolValue = try self.decode(Bool.self, forKey: key)
-                value = boolValue ? 1.0 : 0.0
-            }catch{
-                do {
-                    let stringValue = try self.decode(String.self, forKey: key)
-                    value = Float(stringValue)
-                }catch{
-                }
-            }
-        }
-        return value
-    }
-    
-    //MARK: - Double
-    func decodeIfPresent(_ type: Double.Type, forKey key: K) throws -> Double? {
-        var value:Double?
-        do {
-            value = try self.decode(Double.self, forKey: key)
-        }catch{
-            do {
-                let boolValue = try self.decode(Bool.self, forKey: key)
-                value = boolValue ? 1.0 : 0.0
-            }catch{
-                do {
-                    let stringValue = try self.decode(String.self, forKey: key)
-                    value = Double(stringValue)
-                }catch{
-                }
-            }
-        }
-        return value
-    }
-    
-    //MARK: - URL
-    func decodeIfPresent(_ type: URL.Type, forKey key: K) throws -> URL? {
-        var value:URL?
-        do {
-            value = try self.decode(URL.self, forKey: key)
-        }catch{
-        }
-        return value
-    }
-    
-    //MARK: - Date
-    func decodeIfPresent(_ type: Date.Type, forKey key: K) throws -> Date? {
-        var value:Date?
-        do {
-            let timeStamp = try self.decode(Double.self, forKey: key)
-            if let div = Double(key.description) {
-                value = Date(timeIntervalSince1970: TimeInterval(timeStamp / div))
-            }else {
-                value = Date(timeIntervalSince1970: TimeInterval(timeStamp))
-            }
-        }catch{
-            do {
-                value = try self.decode(Date.self, forKey: key)
-            }catch{
-                do {
-                    let stringValue = try self.decode(String.self, forKey: key)
-                    guard !key.description.isEmpty else {
-                        return value
-                    }
-                    value = self.fromStringToDate(dateString: stringValue, format: key.description)
-                } catch {
-                }
-            }
-        }
-        return value
-    }
-    
-    fileprivate func fromStringToDate(dateString: String, format: String) -> Date?{
+    func date(format: String) -> Date? {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .none;
-        dateFormatter.timeStyle = .none;
-        dateFormatter.timeZone = TimeZone.autoupdatingCurrent;
-        dateFormatter.dateFormat = format;
-        
-        guard let date = dateFormatter.date(from: dateString) else {
-            return nil
-        }
-        return date
-    }
-    
-    //MARK: - Decodable Property
-    func decodeIfPresent<T>(_ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> T? where T : Decodable {
-        var value:T?
-        do {
-            value = try self.decode(T.self, forKey: key)
-        }catch{
-        }
-        return value
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .none
+        dateFormatter.timeZone = .autoupdatingCurrent
+        dateFormatter.dateFormat = format
+        return dateFormatter.date(from: self)
     }
 }
 
-// MARK:- Another Int Decoding
 extension KeyedDecodingContainer {
-    func decodeIfPresent(_ type: Int8.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Int8? {
-        var value:Int8?
-        do {
-            value = try self.decode(Int8.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = Int8(stringValue)
-            }catch{
-            }
+    
+    // MARK: - String
+    
+    func decodeIfPresent(_ type: String.Type, forKey key: K) throws -> String? {
+        if let stringValue = try? decode(String.self, forKey: key) {
+            return stringValue
+        } else if let boolValue = try? decode(Bool.self, forKey: key) {
+            return String(boolValue)
+        } else if let intValue = try? decode(Int.self, forKey: key) {
+            return String(intValue)
+        } else if let doubleValue = try? decode(Double.self, forKey: key) {
+            return String(doubleValue)
+        } else {
+            return "-"
         }
-        return value
     }
-    func decodeIfPresent(_ type: Int16.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Int16? {
-        var value:Int16?
-        do {
-            value = try self.decode(Int16.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = Int16(stringValue)
-            }catch{
-            }
+    
+    // MARK: - Int
+    
+    func decodeIfPresent(_ type: Int.Type, forKey key: K) throws -> Int? {
+        if let intValue = try? decode(Int.self, forKey: key) {
+            return intValue
+        } else if let boolValue = try? decode(Bool.self, forKey: key) {
+            return boolValue ? 1 : 0
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Int(stringValue) ?? 0
+        } else if let doubleValue = try? decode(Double.self, forKey: key) {
+            return Int(doubleValue)
+        } else {
+            return 0
         }
-        return value
     }
-    func decodeIfPresent(_ type: Int32.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Int32? {
-        var value:Int32?
-        do {
-            value = try self.decode(Int32.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = Int32(stringValue)
-            }catch{
-            }
+    
+    // MARK: - Bool
+    
+    func decodeIfPresent(_ type: Bool.Type, forKey key: K) throws -> Bool? {
+        if let boolValue = try? decode(Bool.self, forKey: key) {
+            return boolValue
+        } else if let intValue = try? decode(Int.self, forKey: key) {
+            return Bool(truncating: intValue as NSNumber)
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Bool(stringValue)
+        } else {
+            return nil
         }
-        return value
     }
-    func decodeIfPresent(_ type: Int64.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Int64? {
-        var value:Int64?
-        do {
-            value = try self.decode(Int64.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = Int64(stringValue)
-            }catch{
-            }
+    
+    // MARK: - Float
+    
+    func decodeIfPresent(_ type: Float.Type, forKey key: K) throws -> Float? {
+        if let floatValue = try? decode(Float.self, forKey: key) {
+            return floatValue
+        } else if let boolValue = try? decode(Bool.self, forKey: key) {
+            return boolValue ? 1 : 0
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Float(stringValue)
+        } else {
+            return 0.0
         }
-        return value
     }
-    func decodeIfPresent(_ type: UInt.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> UInt? {
-        var value:UInt?
-        do {
-            value = try self.decode(UInt.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = UInt(stringValue)
-            }catch{
-            }
+    
+    // MARK: - Double
+    
+    func decodeIfPresent(_ type: Double.Type, forKey key: K) throws -> Double? {
+        if let doubleValue = try? decode(Double.self, forKey: key) {
+            return doubleValue
+        } else if let boolValue = try? decode(Bool.self, forKey: key) {
+            return boolValue ? 1 : 0
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Double(stringValue)
+        } else {
+            return 0.0
         }
-        return value
     }
-    func decodeIfPresent(_ type: UInt8.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> UInt8? {
-        var value:UInt8?
-        do {
-            value = try self.decode(UInt8.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = UInt8(stringValue)
-            }catch{
+    
+    // MARK: - URL
+    
+    func decodeIfPresent(_ type: URL.Type, forKey key: K) throws -> URL? {
+        return try? decode(URL.self, forKey: key)
+    }
+    
+    // MARK: - Date
+    
+    func decodeIfPresent(_ type: Date.Type, forKey key: K) throws -> Date? {
+        if let timeStampValue = try? decode(Double.self, forKey: key) {
+            if let div = Double(key.description) {
+                return Date(timeIntervalSince1970: TimeInterval(timeStampValue / div))
+            }else {
+                return Date(timeIntervalSince1970: TimeInterval(timeStampValue))
             }
+        } else if let dateValue = try? decode(Date.self, forKey: key) {
+            return dateValue
+        } else if let stringValue = try? decode(String.self, forKey: key), !key.description.isEmpty {
+            return stringValue.date(format: key.description)
+        } else {
+            return Date()
         }
-        return value
     }
-    func decodeIfPresent(_ type: UInt16.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> UInt16? {
-        var value:UInt16?
-        do {
-            value = try self.decode(UInt16.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = UInt16(stringValue)
-            }catch{
-            }
-        }
-        return value
-    }
-    func decodeIfPresent(_ type: UInt32.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> UInt32? {
-        var value:UInt32?
-        do {
-            value = try self.decode(UInt32.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = UInt32(stringValue)
-            }catch{
-            }
-        }
-        return value
-    }
-    func decodeIfPresent(_ type: UInt64.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> UInt64? {
-        var value:UInt64?
-        do {
-            value = try self.decode(UInt64.self, forKey: key)
-        }catch{
-            do {
-                let stringValue = try self.decode(String.self, forKey: key)
-                value = UInt64(stringValue)
-            }catch{
-            }
-        }
-        return value
-    }
+    
+}
 
+extension KeyedDecodingContainer {
+    
+    // MARK: - Another Int Decoding
+    
+    func decodeIfPresent(_ type: Int8.Type, forKey key: K) throws -> Int8? {
+        if let int8Value = try? decode(Int8.self, forKey: key) {
+            return int8Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Int8(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: Int16.Type, forKey key: K) throws -> Int16? {
+        if let int16Value = try? decode(Int16.self, forKey: key) {
+            return int16Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Int16(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: Int32.Type, forKey key: K) throws -> Int32? {
+        if let int32Value = try? decode(Int32.self, forKey: key) {
+            return int32Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Int32(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: Int64.Type, forKey key: K) throws -> Int64? {
+        if let int64Value = try? decode(Int64.self, forKey: key) {
+            return int64Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return Int64(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: UInt.Type, forKey key: K) throws -> UInt? {
+        if let uIntValue = try? decode(UInt.self, forKey: key) {
+            return uIntValue
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return UInt(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: UInt8.Type, forKey key: K) throws -> UInt8? {
+        if let uInt8Value = try? decode(UInt8.self, forKey: key) {
+            return uInt8Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return UInt8(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: UInt16.Type, forKey key: K) throws -> UInt16? {
+        if let uInt16Value = try? decode(UInt16.self, forKey: key) {
+            return uInt16Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return UInt16(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: UInt32.Type, forKey key: K) throws -> UInt32? {
+        if let iInt32Value = try? decode(UInt32.self, forKey: key) {
+            return iInt32Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return UInt32(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
+    func decodeIfPresent(_ type: UInt64.Type, forKey key: K) throws -> UInt64? {
+        if let uInt64Value = try? decode(UInt64.self, forKey: key) {
+            return uInt64Value
+        } else if let stringValue = try? decode(String.self, forKey: key) {
+            return UInt64(stringValue)
+        } else {
+            return 0
+        }
+    }
+    
 }
