@@ -13,7 +13,7 @@ For Date you can use CodingKeys to set Date format or timeStamp division, I use 
 
 ### Sample
 ```ruby
-    struct TimeStamp : Decodable {
+    struct MyModule : Decodable {
     var date:Date?
     
     private enum CodingKeys : String, CodingKey {
