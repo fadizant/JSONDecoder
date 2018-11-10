@@ -28,3 +28,4 @@ struct MyModule : Decodable {
 ```
 
 # Enjoy 😁
+**Make sure all properties in your module as optional property 🤔, for missing data 😑 .**
