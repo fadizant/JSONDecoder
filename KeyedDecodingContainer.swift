@@ -36,7 +36,7 @@ extension KeyedDecodingContainer {
         } else if let doubleValue = try? decode(Double.self, forKey: key) {
             return String(doubleValue)
         } else {
-            return "-"
+            return nil
         }
     }
     
@@ -48,11 +48,11 @@ extension KeyedDecodingContainer {
         } else if let boolValue = try? decode(Bool.self, forKey: key) {
             return boolValue ? 1 : 0
         } else if let stringValue = try? decode(String.self, forKey: key) {
-            return Int(stringValue) ?? 0
+            return Int(stringValue)
         } else if let doubleValue = try? decode(Double.self, forKey: key) {
             return Int(doubleValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -80,7 +80,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return Float(stringValue)
         } else {
-            return 0.0
+            return nil
         }
     }
     
@@ -94,7 +94,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return Double(stringValue)
         } else {
-            return 0.0
+            return nil
         }
     }
     
@@ -122,6 +122,12 @@ extension KeyedDecodingContainer {
         }
     }
     
+    // MARK: - Decodable Property
+    
+    func decodeIfPresent<T: Decodable>(_ type: T.Type, forKey key: K) throws -> T?  {
+        return try? decode(T.self, forKey: key)
+    }
+    
 }
 
 extension KeyedDecodingContainer {
@@ -134,7 +140,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return Int8(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -144,7 +150,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return Int16(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -154,7 +160,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return Int32(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -164,7 +170,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return Int64(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -174,7 +180,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return UInt(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -184,7 +190,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return UInt8(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -194,7 +200,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return UInt16(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -204,7 +210,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return UInt32(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
@@ -214,7 +220,7 @@ extension KeyedDecodingContainer {
         } else if let stringValue = try? decode(String.self, forKey: key) {
             return UInt64(stringValue)
         } else {
-            return 0
+            return nil
         }
     }
     
